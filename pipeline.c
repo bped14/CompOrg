@@ -47,6 +47,141 @@ void printInBinary(uint32_t num, int bit){
 ╚═╝  ╚═╝╚══════╝ ╚═════╝
 *******************************************************************************/
 
+/********************J_TYPE_FUNCTIONS*******************
+
+j
+jal
+
+*/
+
+/********************I_TYPE_FUNCTIONS*******************/
+/*
+
+beq
+
+bne
+
+*/
+
+unsigned long addImmed(unsigned int rs, short int immed){
+    unsigned long result;
+    result = rs + immed;
+    return result;
+}
+
+unsigned long addImmediateUnsigned(unsigned int rs, short int immed){
+    unsigned short int uImmed = immed;
+    unsigned long result;
+    result = rs + (uint32_t)uImmed;
+    return result;
+}
+
+unsigned long setLessThanImmed(unsigned int rs, short int immed){
+    unsigned long result;
+    result = (rs < immed)? 1 : 0;
+    return result;
+}
+
+unsigned long setLessThanImmedUnsigned(unsigned int rs, short int immed){
+    unsigned short int uImmed = immed;
+    unsigned long result;
+    result = (rs < uImmed)? 1 : 0;
+    return result;
+}
+
+unsigned long andImmed(unsigned int rs, short int immed){
+    unsigned short int uImmed = immed;
+    unsigned long result;
+    result = rs & (uint32_t)uImmed;
+    return result;
+}
+
+unsigned long orImmed(unsigned int rs, short int immed){
+    unsigned short int uImmed = immed;
+    unsigned long result;
+    result = rs | (uint32_t)uImmed;
+    return result;
+}
+
+unsigned long xorImmed(unsigned int rs, short int immed){
+    unsigned short int uImmed = immed;
+    unsigned long result;
+    result = rs ^ (uint32_t)uImmed;
+    return result;
+}
+
+unsigned long loadUpperImmed(short int immed){
+    unsigned short int uImmed = immed;
+    unsigned long result;
+    result = (uImmed << 16);
+    return result;
+}
+
+/* CONFUSED BY THIS SHIT
+unsigned long loadByte(unsigned int rs, short int immed){
+
+    unsigned long result;
+
+    return result;
+}
+
+unsigned long loadHalfWord(unsigned int rs, short int immed){
+
+    unsigned long result;
+
+    return result;
+}
+
+unsigned long loadWord(unsigned int rs, short int immed){
+    unsigned long result;
+     R[rt] = M[R[rs]+SignExtImm]
+    return result;
+}
+
+unsigned long loadByteUnsigned(unsigned int rs, short int immed){
+    unsigned long result;
+
+    return result;
+}
+
+unsigned long loadHalfWordUnsigned(unsigned int rs, short int immed){
+    unsigned long result;
+
+    return result;
+}
+
+void storeByte(unsigned int rs, short int immed){
+    unsigned long result;
+
+    return;
+}
+
+void storeHalfWord(unsigned int rs, short int immed){
+    unsigned long result;
+
+    return;
+}
+
+void storeWord(unsigned int rs, short int immed){
+    unsigned long result;
+
+    return;
+}
+
+*/
+
+void branchLessThanZero(unsigned int rs, short int immed){
+
+}
+
+void branchGreaterThanZero(unsigned int rs, short int immed){
+
+}
+
+void branchLessThanEqualZero(unsigned int rs, short int immed){
+
+}
+
 /********************R_TYPE_FUNCTIONS*******************/
 unsigned long shiftLeftLogical(unsigned int rt, unsigned int shamt){
     unsigned long result;
@@ -64,29 +199,6 @@ void jumpRegister(){
 
 }
 */
-unsigned long multiply(unsigned int rs, unsigned int rt){
-    unsigned long result;
-    result = rs * rt;
-    return result;
-}
-
-unsigned long multiplyUnsigned(unsigned int rs, unsigned int rt){
-    unsigned long result;
-    result = rs * rt;
-    return result;
-}
-
-unsigned long divide(unsigned int rs, unsigned int rt){
-    unsigned long result;
-    result = rs / rt;
-    return result;
-}
-
-unsigned long divideUnsigned(unsigned int rs, unsigned int rt){
-    unsigned long result;
-    result = rs / rt;
-    return result;
-}
 
 unsigned long addition(unsigned int rs, unsigned int rt){
     unsigned long result;
@@ -148,7 +260,28 @@ unsigned long setLessThanUnsigned(unsigned int rs, unsigned int rt){
     result = (rs < rt)? 1:0;
     return result;
 }
-/*******************************************************/
+
+/*
+unsigned long moveNonZero(unsigned int rs, unsigned int rt, unsigned int rd){
+    unsigned long result;
+    if(rt != 0){
+        result = rs;
+    } else {
+        result = rd;
+    }
+    return result;
+}
+
+unsigned long moveZero(unsigned int rs, unsigned int rt, unsigned int rd){
+    unsigned long result;
+    if(rt = 0){
+        result = rs;
+    } else {
+        result = rd;
+    }
+    return result;
+}
+*/
 
 /*******************************************************************************
 ██╗  ██╗███████╗██╗     ██████╗ ███████╗██████╗ ███████╗
@@ -351,6 +484,29 @@ void executeDetermination(){
                 IDEX.ALUop = subu;
 
                 break;
+
+            //movn - move conditional on not zero
+            case movn :
+                IDEX.regWrite = true;
+                rsRegDetermination(IFID.Rs);
+                rtRegDetermination(IFID.Rt);
+                IDEX.Rd = IFID.Rd;
+                IDEX.shamt = IFID.shamt;
+                IDEX.ALUop = movn;
+
+                break;
+
+            //movz - move conditional on zero
+            case movz :
+                IDEX.regWrite = true;
+                rsRegDetermination(IFID.Rs);
+                rtRegDetermination(IFID.Rt);
+                IDEX.Rd = IFID.Rd;
+                IDEX.shamt = IFID.shamt;
+                IDEX.ALUop = movz;
+
+                break;
+
         }
 
     }
@@ -511,6 +667,16 @@ void executeDetermination(){
                 IDEX.immediate = IFID.immediate;
 
                 break;
+            //sh
+            case sh :
+                //IDEX.regWrite = true;
+                rsRegDetermination(IFID.Rs);
+                rtRegDetermination(IFID.Rt);
+                IDEX.ALUop = sh;
+                IDEX.immediate = IFID.immediate;
+
+                break;
+
             //sw
             case sw :
                 //IDEX.regWrite = true;
@@ -521,10 +687,38 @@ void executeDetermination(){
 
                 break;
 
+            //bgtz
+            case bgtz :
+                //IDEX.regWrite = true;
+                rsRegDetermination(IFID.Rs);
+                rtRegDetermination(IFID.Rt);
+                IDEX.ALUop = bgtz;
+                IDEX.immediate = IFID.immediate;
+
+                break;
+
+            //bltz
+            case bltz :
+                //IDEX.regWrite = true;
+                rsRegDetermination(IFID.Rs);
+                rtRegDetermination(IFID.Rt);
+                IDEX.ALUop = bltz;
+                IDEX.immediate = IFID.immediate;
+
+                break;
+
+            //blez
+            case blez :
+                //IDEX.regWrite = true;
+                rsRegDetermination(IFID.Rs);
+                rtRegDetermination(IFID.Rt);
+                IDEX.ALUop = blez;
+                IDEX.immediate = IFID.immediate;
+
+                break;
+
         }
     }
-
-
 
     return;
 }
@@ -538,7 +732,7 @@ void execute(){
             break;
 
         //shift right logical
-        case sll :
+        case srl :
             EXMEM.ALUresult = shiftRightLogical(IDEX.RtValue, IDEX.shamt);
             break;
 
@@ -548,26 +742,6 @@ void execute(){
 
             break;
         */
-
-        //multiply
-        case mult :
-            EXMEM.ALUresult = multiply(IDEX.RsValue, IDEX.RtValue);
-            break;
-
-        //multipy unsigned
-        case mult :
-            EXMEM.ALUresult = multiplyUnsigned(IDEX.RsValue, IDEX.RtValue);
-            break;
-
-        //divide
-        case div :
-            EXMEM.ALUresult = divide(IDEX.RsValue, IDEX.RtValue);
-            break;
-
-        //divide unsigned
-        case divu :
-            EXMEM.ALUresult = divideUnsigned(IDEX.RsValue, IDEX.RtValue);
-            break;
 
         //add
         case add :
@@ -615,10 +789,19 @@ void execute(){
             break;
 
         //set less than unsigned
-        case and :
+        case sltu :
             EXMEM.ALUresult = setLessThanUnsigned(IDEX.RsValue, IDEX.RtValue);
             break;
 
+        //move non zero
+        case movn :
+            //EXMEM.ALUresult = moveNonZero(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+        //move zero
+        case movz :
+            //EXMEM.ALUresult = moveZero(IDEX.RsValue, IDEX.RtValue);
+            break;
     }
     return;
 }
@@ -702,6 +885,15 @@ int main(){
     printInBinary(a,0);
     printInBinary(b,0);
     printInBinary(c,0);
+
+    short int immed = 0xffff;
+    unsigned short int uImmed = immed;
+    unsigned long result;
+    result = (uImmed << 16);
+    printInBinary(result, 0);
+
+
+
 
     /*
     printInBinary( (uint32_t) IFID.Opcode , 0 );
