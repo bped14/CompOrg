@@ -1,4 +1,3 @@
-//declarations header file
 #include <stdbool.h>
 
 #ifndef DECLARATIONS_H
@@ -73,9 +72,23 @@ typedef struct{
     unsigned long RtValue; //regRtValue
     unsigned int shamt;
     short int immediate;
-    //PCin
+    unsigned int PCinc;
 
 } IDEX_Reg;
+
+typedef struct{
+    bool regWrite;//regWrite
+    //memread
+    //memtoreg
+    unsigned int ALUop;
+    unsigned long ALUresult;
+    unsigned int Rd; //destination reg r type
+    unsigned int Rt; //destination reg i type
+    short int immediate;
+    unsigned int PCinc;
+
+} EXMEM_Reg;
+
 
 
 
