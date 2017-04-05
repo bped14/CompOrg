@@ -3,8 +3,15 @@
 #ifndef DECLARATIONS_H
 #define DECLARATIONS_H
 
+/* need
 
-//opcode hex definitions
+nop
+sh
+
+*/
+
+
+//instruction set
 #define j       0x0002
 #define jal     0x0003
 #define beq     0x0004
@@ -23,16 +30,14 @@
 #define lbu     0x0024
 #define lhu     0x0025
 #define sb      0x0028
+#define sh      0x0029
 #define sw      0x002B
-
-//function hex definitions
+#define bltz    0x0001
+#define bgtz    0x0007
+#define blez    0x0006
 #define sll     0x0000
 #define srl     0x0002
 #define jr      0x0008
-#define mult    0x0018
-#define multu   0x0019
-#define div     0x001a
-#define divu    0x001b
 #define add     0x0020
 #define addu    0x0021
 #define sub     0x0022
@@ -43,6 +48,11 @@
 #define nor     0x0027
 #define slt     0x002A
 #define sltu    0x002B
+//need some help on these two
+#define movn    0x000B
+#define movz    0x000A
+
+
 
 
 
