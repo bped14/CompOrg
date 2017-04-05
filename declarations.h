@@ -35,7 +35,7 @@ sh
 #define bltz    0x0001
 #define bgtz    0x0007
 #define blez    0x0006
-#define sll     0x0000
+#define sll     0x0000 //this is also nop
 #define srl     0x0002
 #define jr      0x0008
 #define add     0x0020
@@ -99,7 +99,11 @@ typedef struct{
 
 } EXMEM_Reg;
 
+typedef struct{
+    bool memWrite; //memWrite
+    
 
+} MEMWB_Reg;
 
 
 #endif //DECLARATIONS_H
