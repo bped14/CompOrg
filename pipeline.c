@@ -1,6 +1,3 @@
-//pipeline file
-//fuck yea
-
 #include "declarations.h"
 #include <stdio.h>
 #include <stdint.h>
@@ -9,8 +6,7 @@
 //create the 4 register structs
 IFID_Reg IFID;
 IDEX_Reg IDEX;
-//IDEX
-//EXMEM
+EXMEM_Reg EXMEM;
 //MEMWB
 
 //some test machine code
@@ -43,67 +39,13 @@ void printInBinary(uint32_t num, int bit){
 }
 
 /*******************************************************************************
-██╗  ██╗███████╗██╗     ██████╗ ███████╗██████╗ ███████╗
-██║  ██║██╔════╝██║     ██╔══██╗██╔════╝██╔══██╗██╔════╝
-███████║█████╗  ██║     ██████╔╝█████╗  ██████╔╝███████╗
-██╔══██║██╔══╝  ██║     ██╔═══╝ ██╔══╝  ██╔══██╗╚════██║
-██║  ██║███████╗███████╗██║     ███████╗██║  ██║███████║
-╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝╚══════╝
+ █████╗ ██╗     ██╗   ██╗
+██╔══██╗██║     ██║   ██║
+███████║██║     ██║   ██║
+██╔══██║██║     ██║   ██║
+██║  ██║███████╗╚██████╔╝
+╚═╝  ╚═╝╚══════╝ ╚═════╝
 *******************************************************************************/
-
-//sections up r type data
-void rtype(unsigned long rtypeData){
-    //bit masking and shifting for each part of the r type
-    IFID.Opcode = (rtypeData & 0xFC000000) >> 26;
-    IFID.Rs = (rtypeData & 0x03E00000) >> 21;
-    IFID.Rt = (rtypeData & 0x001F0000) >> 16;
-    IFID.Rd = (rtypeData & 0x0000F800) >> 11;
-    IFID.shamt = (rtypeData & 0x000007C0) >> 6;
-    IFID.funct = (rtypeData & 0x0000003F) >> 0;
-    return;
-}
-
-//sections up i type data
-void itype(unsigned long itypeData){
-    //bit masking and shifting for each part of the i type
-    IFID.Opcode = (itypeData & 0xFC000000) >> 26;
-    IFID.Rs = (itypeData & 0x03E00000) >> 21;
-    IFID.Rt = (itypeData & 0x001F0000) >> 16;
-    IFID.immediate = (itypeData & 0x0000FFFF) >> 0;
-    return;
-}
-
-//sections up j type data
-void jtype(unsigned long jtypeData){
-    //bit masking and shifting for each part of the i type
-    IFID.Opcode = (jtypeData & 0xFC000000) >> 26;
-    IFID.jumpaddress = (jtypeData & 0x03FFFFFF) >> 0;
-    return;
-}
-
-//determine where to send the data based on the opcode
-void typeSelect(unsigned long machCode){
-    IFID.Opcode = (machCode & 0xFC000000) >> 26;
-
-    switch(IFID.Opcode) {
-        //every r type has a 0 for the opcode
-        case 0x0000 :
-            rtype(machCode);
-            break;
-        //only two functions use j type
-        case 0x0002 : //jump
-            jtype(machCode);
-            break;
-        case 0x0003 : //jump and link
-            jtype(machCode);
-            break;
-        default :   //everything else will be an immidiate
-            itype(machCode);
-            break;
-    }
-
-    return;
-}
 
 /********************R_TYPE_FUNCTIONS*******************/
 unsigned long shiftLeftLogical(unsigned int rt, unsigned int shamt){
@@ -208,6 +150,68 @@ unsigned long setLessThanUnsigned(unsigned int rs, unsigned int rt){
 }
 /*******************************************************/
 
+/*******************************************************************************
+██╗  ██╗███████╗██╗     ██████╗ ███████╗██████╗ ███████╗
+██║  ██║██╔════╝██║     ██╔══██╗██╔════╝██╔══██╗██╔════╝
+███████║█████╗  ██║     ██████╔╝█████╗  ██████╔╝███████╗
+██╔══██║██╔══╝  ██║     ██╔═══╝ ██╔══╝  ██╔══██╗╚════██║
+██║  ██║███████╗███████╗██║     ███████╗██║  ██║███████║
+╚═╝  ╚═╝╚══════╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝╚══════╝
+*******************************************************************************/
+
+//sections up r type data
+void rtype(unsigned long rtypeData){
+    //bit masking and shifting for each part of the r type
+    IFID.Opcode = (rtypeData & 0xFC000000) >> 26;
+    IFID.Rs = (rtypeData & 0x03E00000) >> 21;
+    IFID.Rt = (rtypeData & 0x001F0000) >> 16;
+    IFID.Rd = (rtypeData & 0x0000F800) >> 11;
+    IFID.shamt = (rtypeData & 0x000007C0) >> 6;
+    IFID.funct = (rtypeData & 0x0000003F) >> 0;
+    return;
+}
+
+//sections up i type data
+void itype(unsigned long itypeData){
+    //bit masking and shifting for each part of the i type
+    IFID.Opcode = (itypeData & 0xFC000000) >> 26;
+    IFID.Rs = (itypeData & 0x03E00000) >> 21;
+    IFID.Rt = (itypeData & 0x001F0000) >> 16;
+    IFID.immediate = (itypeData & 0x0000FFFF) >> 0;
+    return;
+}
+
+//sections up j type data
+void jtype(unsigned long jtypeData){
+    //bit masking and shifting for each part of the i type
+    IFID.Opcode = (jtypeData & 0xFC000000) >> 26;
+    IFID.jumpaddress = (jtypeData & 0x03FFFFFF) >> 0;
+    return;
+}
+
+//determine where to send the data based on the opcode
+void typeSelect(unsigned long machCode){
+    IFID.Opcode = (machCode & 0xFC000000) >> 26;
+
+    switch(IFID.Opcode) {
+        //every r type has a 0 for the opcode
+        case 0x0000 :
+            rtype(machCode);
+            break;
+        //only two functions use j type
+        case 0x0002 : //jump
+            jtype(machCode);
+            break;
+        case 0x0003 : //jump and link
+            jtype(machCode);
+            break;
+        default :   //everything else will be an immidiate
+            itype(machCode);
+            break;
+    }
+
+    return;
+}
 
 //determine rs value
 void rsRegDetermination(unsigned int rs){
@@ -222,7 +226,7 @@ void rtRegDetermination(unsigned int rt){
 }
 
 //takes the information on I and R type instructions and figures out what its supposed to do
-void functionDetermination(){
+void executeDetermination(){
     //R Type
     if(IFID.Opcode == 0){
         //decide what to do with r type inst based on its funct
@@ -525,6 +529,100 @@ void functionDetermination(){
     return;
 }
 
+void execute(){
+    //determine the operation
+    switch(IDEX.ALUop){
+        //shift left logical
+        case sll :
+            EXMEM.ALUresult = shiftLeftLogical(IDEX.RtValue, IDEX.shamt);
+            break;
+
+        //shift right logical
+        case sll :
+            EXMEM.ALUresult = shiftRightLogical(IDEX.RtValue, IDEX.shamt);
+            break;
+
+        //jump register
+        /*
+        case jr :
+
+            break;
+        */
+
+        //multiply
+        case mult :
+            EXMEM.ALUresult = multiply(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+        //multipy unsigned
+        case mult :
+            EXMEM.ALUresult = multiplyUnsigned(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+        //divide
+        case div :
+            EXMEM.ALUresult = divide(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+        //divide unsigned
+        case divu :
+            EXMEM.ALUresult = divideUnsigned(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+        //add
+        case add :
+            EXMEM.ALUresult = addition(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+        //add unsigned
+        case addu :
+            EXMEM.ALUresult = addUnsigned(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+        //subtract
+        case sub :
+            EXMEM.ALUresult = subtract(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+        //subtract unsigned
+        case subu :
+            EXMEM.ALUresult = subtractUnsigned(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+        //and
+        case and :
+            EXMEM.ALUresult = andOperation(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+        //or
+        case or :
+            EXMEM.ALUresult = orOperation(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+        //xor
+        case xor :
+            EXMEM.ALUresult = xorOperation(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+        //nor
+        case nor :
+            EXMEM.ALUresult = norOperation(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+        //set less than
+        case slt :
+            EXMEM.ALUresult = setLessThan(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+        //set less than unsigned
+        case and :
+            EXMEM.ALUresult = setLessThanUnsigned(IDEX.RsValue, IDEX.RtValue);
+            break;
+
+    }
+    return;
+}
+
 
 
 /*******************************************************************************
@@ -539,22 +637,28 @@ void functionDetermination(){
 void IF(unsigned long machCode){
     //find data in memory
 
-
     //find out instruction type and decode that type
     typeSelect(efoff);
     return;
 }
 
 void ID(unsigned long machCode){
-
-
-
+    //find out what we're supposed to do with the instruction
+    executeDetermination();
 
     return;
 }
 
 void EX(){
+    EXMEM.regWrite = IDEX.regWrite;
+    EXMEM.ALUop = IDEX.ALUop;
+    EXMEM.Rd = IDEX.Rd;
+    EXMEM.Rt = IDEX.Rt;
+    EXMEM.immediate = IDEX.immediate;
+    EXMEM.PCinc = IDEX.PCinc;
 
+    //do the ALU operation
+    execute();
 
     return;
 }
